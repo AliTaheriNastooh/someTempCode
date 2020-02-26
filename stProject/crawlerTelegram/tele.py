@@ -2,14 +2,12 @@ from telethon import TelegramClient, events
 from telethon import utils
 import configparser
 from hazm import Normalizer
-import psycopg2
 import sys
 import json
 from telethon.tl.types import PeerUser, PeerChat, PeerChannel,Channel,User,Chat
 from pymongo import MongoClient
 import os
 #mishe aval kar hame aza yek channel ro begirim ke dge har dafeh bara har payam check nakonim vali ye fekri bara aza jadid begirm v aya chanal mishe aza ro begirim
-#farz shodeh har payam marbot be yek sahm ast baadan mishe avaz kard
 #behbood khondan v neveshtan image
 #baraye channal ha in tor hast ke id payam dahandeh ro nemideh vali author ro mideh miam id mishe esmesh va username ham esm channel
 currentPath=os.path.abspath(os.getcwd())
@@ -22,22 +20,16 @@ def writeJsonOpject(jsonObject):
     f.flush()
 def writeJsonOpjectToMongo(jsonObject):
     dbMongo.telegram.insert_one(jsonObject)
-def init_database():
-    mhost='localhost'
-    mdatabase='telegram'
-    muser='postgres'
-    mpassword='aliali0321'
-    conn = psycopg2.connect(host=mhost,database=mdatabase, user=muser, password=mpassword)
-    cur = conn.cursor()
-    return conn,cur
 
 
 
 
 
-async def createJson(content,date,senderId,senderUserName,senderName,isGroup,channelUserName,channelName,parentId,image,version,lastMessageId,channelId):
+
+async def createJson(messageId,content,date,senderId,senderUserName,senderName,isGroup,channelUserName,channelName,parentId,image,version,lastMessageId,channelId):
     myJson={
         'message ':{
+            'id':messageId,
             'content': content,
             'date': date,
             'senderId': senderId,
@@ -57,6 +49,7 @@ async def createJson(content,date,senderId,senderUserName,senderName,isGroup,cha
     writeJsonOpjectToMongo(myJson)
 
 async def addMessage2(message,channel_group,channel,channelType):
+    messageId=0
     content=''
     date=''
     senderId=''   
@@ -74,16 +67,18 @@ async def addMessage2(message,channel_group,channel,channelType):
     print(channel)
     print(message)
     print()
+    messageId=message.id
     content=message.message
     date=message.date
     lastMessageId=message.id
     channelId=channel.id
     if message.photo:
-        path = await message.download_media()
-        actualPath=path
-        f = open(actualPath,'rb')
-        filedata = f.read()
-        image=filedata
+        #path = await message.download_media()
+        #actualPath=path
+        #f = open(actualPath,'rb')
+        #filedata = f.read()
+        #image=filedata
+        image='have image but lines that download the image are commented'
     if(message.reply_to_msg_id is None):
         parentId=0
     else:
@@ -134,7 +129,7 @@ async def addMessage2(message,channel_group,channel,channelType):
             isGroup='false'
         channelUserName=channel.username
         channelName=channel.title
-    await createJson(content,date,senderId,senderUserName,senderName,isGroup,channelUserName,channelName,parentId,image,version,lastMessageId,channelId)
+    await createJson(messageId,content,date,senderId,senderUserName,senderName,isGroup,channelUserName,channelName,parentId,image,version,lastMessageId,channelId)
 
 
 
