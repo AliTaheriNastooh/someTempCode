@@ -1,2 +1,6 @@
 *.jpg
 *.json
+*.pyo
+*.pyc
+.idea
+SahamyabConfig.ini
