@@ -32,7 +32,7 @@ class SahamyabCommentsSpider(scrapy.Spider):
     password = ''
     def createJson(self,id,content,date,senderUsername,senderName,likeCount,parentId,image,version):
         myJson={
-            'message ':{
+            'message':{
                 'id': id,
                 'content': content,
                 'senderUsername': senderUsername,

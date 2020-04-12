@@ -28,7 +28,7 @@ def writeJsonOpjectToMongo(jsonObject):
 
 async def createJson(messageId,content,date,senderId,senderUserName,senderName,isGroup,channelUserName,channelName,parentId,image,version,lastMessageId,channelId):
     myJson={
-        'message ':{
+        'message':{
             'id':messageId,
             'content': content,
             'date': date,
@@ -43,6 +43,7 @@ async def createJson(messageId,content,date,senderId,senderUserName,senderName,i
             'version': version,
             'lastMessageId': lastMessageId,
             'channelId': channelId,
+            'read':0,
         }
     }
     writeJsonOpject(myJson)
@@ -173,7 +174,7 @@ async def getAllMessages(channels):
 
 def init():
     config = configparser.ConfigParser()
-    path=currentPath+r'\teleConfig.ini'
+    path=currentPath+r'\crawlerTelegram\teleConfig.ini'
     config.read(path)
     api_id=config.getint('Telegram','api_id')
     api_hash=config['Telegram']['api_hash']
@@ -181,14 +182,9 @@ def init():
     return api_hash,api_id
 
 
-def fill_namad():
-    f = open(currentPath+r'\name.txt','r',encoding='utf-8')
-    namad=f.read()
-    f.close()
-    return namad.split('\n')
 
 def get_channel():
-    f = open(currentPath+r'\channel_list.txt','r',encoding='utf-8')
+    f = open(currentPath+r'\crawlerTelegram\channel_list.txt','r',encoding='utf-8')
     namad=f.read()
     f.close()
     return namad.split('\n')
@@ -251,8 +247,6 @@ async def setEventToGetMessages(channels):
 
 api_hash,api_id=init()
 client = TelegramClient('anon', api_id, api_hash)
-stocks=fill_namad()
-del stocks[-1]
 normalizer = Normalizer()
 channels = get_channel()
 max_year=2019
