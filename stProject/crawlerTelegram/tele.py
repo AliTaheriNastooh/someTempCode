@@ -7,36 +7,38 @@ import json
 from telethon.tl.types import PeerUser, PeerChat, PeerChannel,Channel,User,Chat
 from pymongo import MongoClient
 import os
+
+
 #mishe aval kar hame aza yek channel ro begirim ke dge har dafeh bara har payam check nakonim vali ye fekri bara aza jadid begirm v aya chanal mishe aza ro begirim
 #behbood khondan v neveshtan image
 #baraye channal ha in tor hast ke id payam dahandeh ro nemideh vali author ro mideh miam id mishe esmesh va username ham esm channel
+
+
 currentPath=os.path.abspath(os.getcwd())
 clientMongo = MongoClient('mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb')
 dbMongo=clientMongo.stock
 f=open('output.txt','w',encoding='utf-8')
 globalVersion=1
+
 def writeJsonOpject(jsonObject):
     json.dump(jsonObject,f,ensure_ascii=False, indent=4, sort_keys=True, default=str)
     f.flush()
+
 def writeJsonOpjectToMongo(jsonObject):
     dbMongo.telegram.insert_one(jsonObject)
 
-
-
-
-
-
 async def createJson(messageId,content,date,senderId,senderUserName,senderName,isGroup,channelUserName,channelName,parentId,image,version,lastMessageId,channelId):
+    #date.isoformat()+'Z'
     myJson={
         'message':{
             'id':messageId,
             'content': content,
-            'date': date,
+            'date': date.isoformat().replace("+00:00", "Z"),
             'senderId': senderId,
-            'senderUserName': senderUserName,
+            'senderUsername': senderUserName,
             'senderName': senderName,
             'isGroup': isGroup,
-            'channelUserName': channelUserName,
+            'channelUsername': channelUserName,
             'channelName': channelName,
             'parentId': parentId,
             'image': image,
@@ -132,13 +134,6 @@ async def addMessage2(message,channel_group,channel,channelType):
         channelName=channel.title
     await createJson(messageId,content,date,senderId,senderUserName,senderName,isGroup,channelUserName,channelName,parentId,image,version,lastMessageId,channelId)
 
-
-
-        
-        
-
-
-
 async def check_all_message(channel):
     channel= await client.get_entity(channel)
     channelType=''
@@ -161,34 +156,24 @@ async def check_all_message(channel):
             break
         await addMessage2(message,channel_group,channel,channelType)
 
-
 async def getAllMessages(channels):
     for channel in channels:
         await check_all_message(channel)
 
-
-
-
-
-
-
 def init():
     config = configparser.ConfigParser()
-    path=currentPath+r'\crawlerTelegram\teleConfig.ini'
+    path=currentPath+r'\stProject\crawlerTelegram\teleConfig.ini'
     config.read(path)
     api_id=config.getint('Telegram','api_id')
     api_hash=config['Telegram']['api_hash']
     api_hash = str(api_hash)
     return api_hash,api_id
 
-
-
 def get_channel():
-    f = open(currentPath+r'\crawlerTelegram\channel_list.txt','r',encoding='utf-8')
+    f = open(currentPath+r'\stProject\crawlerTelegram\channel_list.txt','r',encoding='utf-8')
     namad=f.read()
     f.close()
     return namad.split('\n')
-
 
 async def prepareMessageOnline(message,channelId):
     channel= await client.get_entity(channelId)
@@ -212,10 +197,14 @@ async def prepareMessageOnline(message,channelId):
 async def setEventToGetMessages(channels):
     channelsEntity=[]
     for channel in channels:
-        temp=await client.get_entity(channel)
+        try:
+            temp=await client.get_entity(channel)
+            channelsEntity.append(temp.id)
+        except:
+            print('channel:'+channel+' not found')
         #print(temp)
         #print(temp.id)
-        channelsEntity.append(temp.id)
+        
     @client.on(events.NewMessage(incoming=True,outgoing=False))
     async def my_event_handler(event):
         if(event.message.message == 'lotOut(;;)'):

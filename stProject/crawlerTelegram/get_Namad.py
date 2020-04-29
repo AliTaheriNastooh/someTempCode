@@ -2,7 +2,9 @@ from lxml import etree
 from hazm import Normalizer
 import urllib.request
 import requests
-f = open(r'E:\job\bourse\v1_code\name.txt','w',encoding='utf-8')
+import os
+currentPath=os.path.abspath(os.getcwd())
+f = open(currentPath+r'\stProject\crawlerTelegram\name.txt','w',encoding='utf-8')
 normalizer = Normalizer()
 #f.write('سلام')
 #print(f.read())

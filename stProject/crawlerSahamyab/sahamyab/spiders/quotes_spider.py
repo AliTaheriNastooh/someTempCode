@@ -35,12 +35,14 @@ class SahamyabCommentsSpider(scrapy.Spider):
             'message':{
                 'id': id,
                 'content': content,
+                'date':date,
                 'senderUsername': senderUsername,
                 'senderName': senderName,
                 'likeCount': likeCount,
                 'parentId': parentId,
                 'image': image,
                 'version': version,
+                'read':0,
             }
         }
         self.writeJsonOpject(myJson)
