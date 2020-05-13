@@ -7,6 +7,9 @@ import json
 from telethon.tl.types import PeerUser, PeerChat, PeerChannel,Channel,User,Chat
 from pymongo import MongoClient
 import os
+import datetime
+import pytz
+from telethon.errors import FloodWaitError
 
 
 #mishe aval kar hame aza yek channel ro begirim ke dge har dafeh bara har payam check nakonim vali ye fekri bara aza jadid begirm v aya chanal mishe aza ro begirim
@@ -26,6 +29,18 @@ def writeJsonOpject(jsonObject):
 
 def writeJsonOpjectToMongo(jsonObject):
     dbMongo.telegram.insert_one(jsonObject)
+
+def getLastMessageIdFromMongo(channelId):
+    lastMessageIdCollect = dbMongo.lastMessageId.find({'channelId':channelId})
+    if lastMessageIdCollect.count() >= 1:
+        return lastMessageIdCollect[0]['lastMessageId']
+    else:
+        return -1
+def addLastMessageIdToMongo(channelId,lastMessageId):
+    dbMongo.lastMessageId.insert_one({'channelId':channelId,'lastMessageId':lastMessageId})
+
+def updateLastMessageIdToMongo(channelId,lastMessageId):
+    dbMongo.lastMessageId.update({'channelId':channelId},{'$set':{'lastMessageId':lastMessageId} })
 
 async def createJson(messageId,content,date,senderId,senderUserName,senderName,isGroup,channelUserName,channelName,parentId,image,version,lastMessageId,channelId):
     #date.isoformat()+'Z'
@@ -48,7 +63,7 @@ async def createJson(messageId,content,date,senderId,senderUserName,senderName,i
             'read':0,
         }
     }
-    writeJsonOpject(myJson)
+    #writeJsonOpject(myJson)
     writeJsonOpjectToMongo(myJson)
 
 async def addMessage2(message,channel_group,channel,channelType):
@@ -67,9 +82,9 @@ async def addMessage2(message,channel_group,channel,channelType):
     lastMessageId=0
     channelId=0
     path='none'
-    print(channel)
-    print(message)
-    print()
+    #print(channel)
+    #print(message)
+    #print()
     messageId=message.id
     content=message.message
     date=message.date
@@ -95,7 +110,7 @@ async def addMessage2(message,channel_group,channel,channelType):
         if(channel.last_name is None):
             channel.last_name=''   
         senderName=channel.first_name+' '+channel.last_name
-        isGroup='true'
+        isGroup=True
         channelUserName=channel.username
         channelName=channel.first_name+' '+channel.last_name
     elif(channelType=='Chat'):
@@ -108,11 +123,11 @@ async def addMessage2(message,channel_group,channel,channelType):
         if(newUser.last_name is None):
             newUser.last_name=''   
         senderName=newUser.first_name+' '+newUser.last_name
-        isGroup='true'
-        channelUserName='null'
+        isGroup=False
+        channelUserName=None
         channelName=channel.title
     elif(channelType=='Channel'):
-        if(channel_group=='false'):
+        if(channel_group==False):
             senderId=message.from_id
             newUser= await client.get_entity(senderId)
             senderUserName=newUser.username
@@ -121,42 +136,71 @@ async def addMessage2(message,channel_group,channel,channelType):
             if(newUser.last_name is None):
                 newUser.last_name=''   
             senderName=newUser.first_name+' '+newUser.last_name
-            isGroup='true'
+            isGroup=True
         else:
-            senderId='null'
-            senderUserName='null'
+            senderId=None
+            senderUserName=None
             if(message.post_author is None):
-                senderName='null'
+                senderName=None
             else:
                 senderName=message.post_author
-            isGroup='false'
+            isGroup=False
         channelUserName=channel.username
         channelName=channel.title
     await createJson(messageId,content,date,senderId,senderUserName,senderName,isGroup,channelUserName,channelName,parentId,image,version,lastMessageId,channelId)
 
+def get_lastMessageId(channelId):
+    lastMessageId = getLastMessageIdFromMongo(channelId)
+    if lastMessageId == -1:
+        addLastMessageIdToMongo(channelId,-2)
+    return lastMessageId
+
+async def updateLastMessage(channel):
+    lastMessage = await client.get_messages(channel)
+    if len(lastMessage) > 0:
+        updateLastMessageIdToMongo(channel.id, lastMessage[0].id)
+    else:
+        print('++++zero message+++',channel)
+
 async def check_all_message(channel):
-    channel= await client.get_entity(channel)
+    try:
+        channel= await client.get_entity(channel)
+    except FloodWaitError as e:
+        print('warning(we banned)--- Flood waited for', e.seconds)
+        quit(1)
+    except:
+        print('all message -- channel:'+channel+' not found')
+        return
+    lastMessageId = get_lastMessageId(channel.id)
+    await updateLastMessage(channel)
+    #print(channel.title,'  : ',channel.id,' - lastMessage',lastMessageId)
+
+    print('PeerChannel',channel)
     channelType=''
     if(type(channel) is User):
-        channel_group='false'
+        channel_group=False
         channelType='User'
     elif(type(channel) is Channel):
         print('PeerChannel')
         channelType='Channel'
         if(channel.megagroup==True or channel.broadcast==False):
-            channel_group='false'
+            channel_group=False
         else:
-            channel_group='true'
+            channel_group=True
     elif(type(channel) is Chat):
         channelType='Chat'      
-        channel_group='true'
+        channel_group=True
 
     async for message in client.iter_messages(channel):
-        if(message.date.year < max_year):
+        if message.date < minDate:
+            break
+        if message.id == lastMessageId:
+            print('---lastMessageId--- ',message.id)
             break
         await addMessage2(message,channel_group,channel,channelType)
 
 async def getAllMessages(channels):
+    await client.get_dialogs()
     for channel in channels:
         await check_all_message(channel)
 
@@ -195,6 +239,7 @@ async def prepareMessageOnline(message,channelId):
     await addMessage2(message,channel_group,channel,channelType)
     
 async def setEventToGetMessages(channels):
+    await client.get_dialogs()
     channelsEntity=[]
     for channel in channels:
         try:
@@ -238,10 +283,13 @@ api_hash,api_id=init()
 client = TelegramClient('anon', api_id, api_hash)
 normalizer = Normalizer()
 channels = get_channel()
-max_year=2019
+min_year=2020
+min_month = 5
+min_day = 11
+minDate = datetime.datetime(min_year,min_month,min_day,tzinfo = pytz.UTC)
 with client:
-    client.loop.run_until_complete(setEventToGetMessages(channels))
+    #client.loop.run_until_complete(setEventToGetMessages(channels))
     client.loop.run_until_complete(getAllMessages(channels))
-    client.run_until_disconnected()
+    #client.run_until_disconnected()
     f.close()
 

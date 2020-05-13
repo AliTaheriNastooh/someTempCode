@@ -3,15 +3,21 @@ from bson.objectid import ObjectId
 import pprint
 import os
 import json
+import logging
+import logstash
 
 clientMongo = MongoClient('mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb')
 dbMongo=clientMongo.stock
 dbMongo.telegram
+host = 'localhost'
+test_logger = logging.getLogger('python-logstash-logger')
+test_logger.setLevel(logging.INFO)
+test_logger.addHandler(logstash.TCPLogstashHandler(host, 5959, version=1))
 counter_while=0
 currentPath=os.path.abspath(os.getcwd())
 print('path: '+currentPath)
-f=open(currentPath+'\stProject\metadataFinder\output_logstash.json','a',encoding='utf-8')
-f2=open(currentPath+'\stProject\metadataFinder\output2.txt','w',encoding='utf-8')
+#f=open(currentPath+'\stProject\metadataFinder\output_logstash.json','a',encoding='utf-8')
+#f2=open(currentPath+'\stProject\metadataFinder\output2.txt','w',encoding='utf-8')
 
 def removeMessage(input_list,source):
     if source == 'sahamyab':
@@ -43,67 +49,67 @@ def updateMessage(input_list,source):
 
 def writeJsonOpject(jsonObject):
     json.dump(jsonObject,f2,ensure_ascii=False,default=str, indent=4, sort_keys=True, )#
-    f.flush()
+    f2.flush()
 
 def writeJsonOpjectToLogstash(data_input):
+    test_logger.info('some temp message',extra=data_input)
     #print(data_input, file=f) 
-    json.dump(data_input, f)
+    #json.dump(data_input, f,ensure_ascii=False,default=str)
+    #f.write('\n')
+    #f.flush()
+
     
 
 def getSentimentMessage(message):
     return 'nothing'
-
+#'message':{
 def preparing_telegram_message_for_logstash(message,stockName):
     messageSentiment = getSentimentMessage(message)
-    prepareJson={
-        'message':{
-            'id':message['message']['id']  ,
-            'content': message['message']['content'] ,
-            'date': message['message']['date'] ,
-            'senderId': message['message']['senderId'] ,
-            'senderUserName': message['message']['senderUsername'],
-            'senderName': message['message']['senderName'],
-            'isGroup': message['message']['isGroup'],
-            'channelUserName': message['message']['channelUsername'],
-            'channelName': message['message']['channelName'],
-            'channelId': message['message']['channelId'],
-            'parentId': message['message']['parentId'],
-            'likeCount': 0,
-            'source':'telegram',
-            'stock':stockName,
-            'sentiment':messageSentiment,
-            'image': message['message']['image'],
-            'version': message['message']['version'],
-        }
+    prepareJson={  
+        'messageId':message['message']['id']  ,
+        'content': message['message']['content'] ,
+        'messageDate': message['message']['date'] ,
+        'senderId': message['message']['senderId'] ,
+        'senderUsername': message['message']['senderUsername'],
+        'senderName': message['message']['senderName'],
+        'isGroup': message['message']['isGroup'],
+        'channelUsername': message['message']['channelUsername'],
+        'channelName': message['message']['channelName'],
+        'channelId': message['message']['channelId'],
+        'parentId': message['message']['parentId'],
+        'likeCount': 0,
+        'source':'telegram',
+        'stock':stockName,
+        'sentiment':messageSentiment,
+        'image': message['message']['image'],
+        'version': message['message']['version'],
     }
     writeJsonOpjectToLogstash(prepareJson)
-    writeJsonOpject(message)
+    #writeJsonOpject(message)
 
 def preparing_sahamyab_message_for_logstash(message,stockName):
     messageSentiment = getSentimentMessage(message)
     prepareJson={
-        'message':{
-            'id':message['message']['id']  ,
-            'content': message['message']['content'] ,
-            'date': message['message']['date'] ,
-            'senderId': None ,
-            'senderUserName': message['message']['senderUsername'],
-            'senderName': message['message']['senderName'],
-            'isGroup': False,
-            'channelUserName': 'sahamyab',
-            'channelName': 'sahamyab',
-            'channelId': None,
-            'parentId': message['message']['parentId'],
-            'likeCount': message['message']['likeCount'],
-            'source':'sahamyab',
-            'stock':stockName,
-            'sentiment':messageSentiment,
-            'image': message['message']['image'],
-            'version': message['message']['version'],
-        }
+        'messageId':message['message']['id']  ,
+        'content': message['message']['content'] ,
+        'messageDate': message['message']['date'] ,
+        'senderId': None ,
+        'senderUsername': message['message']['senderUsername'],
+        'senderName': message['message']['senderName'],
+        'isGroup': False,
+        'channelUsername': 'sahamyab',
+        'channelName': 'sahamyab',
+        'channelId': None,
+        'parentId': message['message']['parentId'],
+        'likeCount': message['message']['likeCount'],
+        'source':'sahamyab',
+        'stock':stockName,
+        'sentiment':messageSentiment,
+        'image': message['message']['image'],
+        'version': message['message']['version'],
     }
     writeJsonOpjectToLogstash(prepareJson)
-    writeJsonOpject(message)
+    #writeJsonOpject(message)
 
 def process_message(messages,source):
     useful_list=[]
@@ -129,7 +135,8 @@ def process_message(messages,source):
     updateMessage(useful_list,source)
     
 def fill_namad():
-    f = open(currentPath+r'\stProject\crawlerTelegram\name.txt','r',encoding='utf-8')
+    #currentPath+
+    f = open(r'E:\job\bourse\gitBourse\stProject\crawlerTelegram\name.txt','r',encoding='utf-8')
     namad=f.read()
     f.close()
     return namad.split('\n')
@@ -137,10 +144,13 @@ def fill_namad():
 
 stock_name = fill_namad()
 del stock_name[-1]
-while counter_while<5:
-    messages= dbMongo.telegram.find({'message.read':0}).limit(5)
+countMessage = -1 
+while countMessage != 0:
+    messages= dbMongo.telegram.find({'message.read':0}).limit(100)
     process_message(messages,'telegram')
-    messages= dbMongo.sahamyab.find({'message.read':0}).limit(5)
+    countMessage = messages.count(True)
+while countMessage != 0:
+    messages= dbMongo.sahamyab.find({'message.read':0}).limit(100)
     process_message(messages,'sahamyab')
     print(' ---------- ',messages.count(True))
-    counter_while+=1
+    countMessage =messages.count(True)
