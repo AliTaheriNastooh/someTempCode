@@ -20,6 +20,7 @@ MONGODB_SERVER = "localhost"
 MONGODB_PORT = 27017
 MONGODB_DB = "stock"
 MONGODB_COLLECTION = "sahamyab"
+MONGODB_LASTMESSAGEID_COLLECTION = "lastMessageId"
 #DOWNLOAD_DELAY = 10
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'sahamyab (+http://www.yourdomain.com)'
