@@ -42,6 +42,16 @@ def addLastMessageIdToMongo(channelId,lastMessageId):
 def updateLastMessageIdToMongo(channelId,lastMessageId):
     dbMongo.lastMessageId.update({'channelId':channelId},{'$set':{'lastMessageId':lastMessageId} })
 
+def getUserFromMongo(userId):
+    userIdCollect = dbMongo.users.find({'userId':userId})
+    if userIdCollect.count() >= 1:
+        return userIdCollect[0]
+    else:
+        return None
+
+def addUserToMongo(userId,username,userName):
+    dbMongo.users.insert_one({'userId':userId,'username':username,'userName':userName})
+
 async def createJson(messageId,content,date,senderId,senderUserName,senderName,isGroup,channelUserName,channelName,parentId,image,version,lastMessageId,channelId):
     #date.isoformat()+'Z'
     myJson={
@@ -66,6 +76,20 @@ async def createJson(messageId,content,date,senderId,senderUserName,senderName,i
     #writeJsonOpject(myJson)
     writeJsonOpjectToMongo(myJson)
 
+async def getUser(userId):
+    user = getUserFromMongo(userId)
+    if user == None:
+        print(userId)
+        newUser= await client.get_entity(userId)
+        if(newUser.first_name is None):
+            newUser.first_name=''
+        if(newUser.last_name is None):
+            newUser.last_name=''   
+        senderName=newUser.first_name+' '+newUser.last_name
+        addUserToMongo(newUser.id,newUser.username,senderName)
+        return {'userId':newUser.id,'username':newUser.username,'userName':senderName}
+    else:
+        return user
 async def addMessage2(message,channel_group,channel,channelType):
     messageId=0
     content=''
@@ -115,27 +139,18 @@ async def addMessage2(message,channel_group,channel,channelType):
         channelName=channel.first_name+' '+channel.last_name
     elif(channelType=='Chat'):
         senderId=message.from_id
-        newUser= await client.get_entity(senderId)
-        senderUserName=newUser.username
-        senderId=message.from_id
-        if(newUser.first_name is None):
-            newUser.first_name=''
-        if(newUser.last_name is None):
-            newUser.last_name=''   
-        senderName=newUser.first_name+' '+newUser.last_name
+        newUser= await getUser(senderId)
+        senderUserName=newUser['username'] 
+        senderName=newUser['userName'] 
         isGroup=False
         channelUserName=None
         channelName=channel.title
     elif(channelType=='Channel'):
         if(channel_group==False):
             senderId=message.from_id
-            newUser= await client.get_entity(senderId)
-            senderUserName=newUser.username
-            if(newUser.first_name is None):
-                newUser.first_name=''
-            if(newUser.last_name is None):
-                newUser.last_name=''   
-            senderName=newUser.first_name+' '+newUser.last_name
+            newUser= await getUser(senderId)
+            senderUserName=newUser['username']   
+            senderName=newUser['userName'] 
             isGroup=True
         else:
             senderId=None
@@ -284,8 +299,8 @@ client = TelegramClient('anon', api_id, api_hash)
 normalizer = Normalizer()
 channels = get_channel()
 min_year=2020
-min_month = 5
-min_day = 11
+min_month = 6
+min_day = 7
 minDate = datetime.datetime(min_year,min_month,min_day,tzinfo = pytz.UTC)
 with client:
     #client.loop.run_until_complete(setEventToGetMessages(channels))
