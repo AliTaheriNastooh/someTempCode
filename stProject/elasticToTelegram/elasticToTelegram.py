@@ -16,7 +16,7 @@ def init():
     return api_hash,api_id
 
 async def sendMessage(message):
-    addHeader = '----گزارش سامانه-----'+'\n'+message
+    addHeader = '----📊نمادهایی با بیشترین تکرار در شبکه های اجتماعی -----'+'\n'+message+' \n '+'(لیست نمادها بر اساس تعداد تکرار به صورت نزولی مرتب شده است.)'
     await client.send_message(lonami_group, addHeader)
 
 async def sendElasticsearchQuery1(type,key_query,value_query,value_field,p_field):
@@ -49,14 +49,16 @@ async def sendElasticsearchQuery1(type,key_query,value_query,value_field,p_field
     if(len(aa['aggregations']['my_count']['buckets'])==0):
         messageSendTelegram ='موردی یافت نشد'
     else:
-        for item in aa['aggregations']['my_count']['buckets']:
+        whole = aa['aggregations']['my_count']['buckets']
+        for i in range(min(20,len(whole))):
+            item = whole[i]
             messageSendTelegram+= (p_field+ ' : ' + detective+item['key'] + '  -----  ' + 'تعداد تکرار'+str(item['doc_count']) + '\n')
     print(messageSendTelegram)
     await sendMessage(messageSendTelegram)
     
 async def sendElasticsearchQuery2(type,fromDate,toDate):
     requestBody = {}
-    sizeRequest = 20
+    sizeRequest = 100
     if type == 'uniqueCount':
         requestBody={
                 "query": {
@@ -97,9 +99,10 @@ async def sendElasticsearchQuery2(type,fromDate,toDate):
         print(mylist)
         sortedList = sorted(mylist,key=lambda x: x[1],reverse=True)
         print(sortedList)
-        for i in range(min(sizeRequest,len(sortedList))):
-            messageSendTelegram+= ('نماد'+ ' : ' + '#' + sortedList[i][0]  + '\n')#+ '   ------   ' + 'تعداد تکرار'+str(sortedList[i][1] )
+        for i in range(min(25,len(sortedList))):
+            messageSendTelegram+= ('نماد'+ ' : ' + '#' + sortedList[i][0]+ '   👈  ' + ' تعداد تکرار: '+str(sortedList[i][1] )  + '\n')#+ '   ------   ' + 'تعداد تکرار'+str(sortedList[i][1] )
     print(messageSendTelegram)
+    
     await sendMessage(messageSendTelegram)
 
     

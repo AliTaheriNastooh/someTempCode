@@ -80,14 +80,21 @@ async def getUser(userId):
     user = getUserFromMongo(userId)
     if user == None:
         print(userId)
-        newUser= await client.get_entity(userId)
-        if(newUser.first_name is None):
-            newUser.first_name=''
-        if(newUser.last_name is None):
-            newUser.last_name=''   
-        senderName=newUser.first_name+' '+newUser.last_name
-        addUserToMongo(newUser.id,newUser.username,senderName)
-        return {'userId':newUser.id,'username':newUser.username,'userName':senderName}
+        try:
+            newUser= await client.get_entity(userId)
+            if(newUser.first_name is None):
+                newUser.first_name=''
+            if(newUser.last_name is None):
+                newUser.last_name=''   
+            senderName=newUser.first_name+' '+newUser.last_name
+            addUserToMongo(newUser.id,newUser.username,senderName)
+            return {'userId':newUser.id,'username':newUser.username,'userName':senderName}
+        except FloodWaitError as e:
+            print('warning(we banned)--- Flood waited for', e.seconds)
+            quit(1)
+        except:
+            print('user not found')
+            return {'userId':1,'username':'deleted','userName':'deleted'}
     else:
         return user
 async def addMessage2(message,channel_group,channel,channelType):
@@ -300,7 +307,7 @@ normalizer = Normalizer()
 channels = get_channel()
 min_year=2020
 min_month = 6
-min_day = 7
+min_day = 22
 minDate = datetime.datetime(min_year,min_month,min_day,tzinfo = pytz.UTC)
 with client:
     #client.loop.run_until_complete(setEventToGetMessages(channels))

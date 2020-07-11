@@ -117,8 +117,11 @@ def process_message(messages,source):
     for message in messages:
         messageStock='none'
         message_content = message['message']['content'] 
+        if message_content==None:
+                continue
         for name in stock_name:
-            if message_content!=None and  name in message_content:
+            index = message_content.find(name)
+            if index!= -1 and (index==0  or (message_content[index-1]=='#' or message_content[index-1].isspace())) and (index+len(name) >= len(message_content)  or (index+len(name) <len(message_content) and message_content[index+len(name)].isspace())):
                 messageStock = name
                 break
         if messageStock != 'none':
@@ -128,6 +131,7 @@ def process_message(messages,source):
                 preparing_telegram_message_for_logstash(message,messageStock)
             else:
                 print('error in source -- process_messge function')
+                continue
             useful_list.append(ObjectId(message['_id']))
         else:
             useless_list.append(ObjectId(message['_id']))
@@ -143,12 +147,12 @@ def fill_namad():
 
 
 stock_name = fill_namad()
-del stock_name[-1]
 countMessage = -1 
 while countMessage != 0:
     messages= dbMongo.telegram.find({'message.read':0}).limit(100)
     process_message(messages,'telegram')
     countMessage = messages.count(True)
+countMessage = -1
 while countMessage != 0:
     messages= dbMongo.sahamyab.find({'message.read':0}).limit(100)
     process_message(messages,'sahamyab')
