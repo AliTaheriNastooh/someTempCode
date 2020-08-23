@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="anon" uuid="0bc8afbb-040e-451b-9adb-24a34e6d302d">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\Users\Reza\PycharmProjects\someTempCode\stProject\crawlerTelegram\anon.session</jdbc-url>
+    </data-source>
+  </component>
+</project>
