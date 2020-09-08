@@ -30,7 +30,7 @@ from search_index.serializers.post import PostDocumentSerializer
 
 
 class PostDocumentView(DocumentViewSet):
-    """The BookDocument view."""
+
 
     document = PostDocument
     serializer_class = PostDocumentSerializer
@@ -106,4 +106,4 @@ class PostDocumentView(DocumentViewSet):
         'messageDate': 'messageDate',
     }
     # Specify default ordering
-    ordering = ('messageDate', 'channelId',)
+    ordering = ('messageDate', 'elasticPushDate',)

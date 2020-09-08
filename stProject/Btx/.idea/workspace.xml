@@ -28,10 +28,13 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../someTempCode" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="OPEN_URL_DIALOG">
+      <recent name="https://github.com/barseghyanartur/django-elasticsearch-dsl-drf.git" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Reza\PycharmProjects\Btx\templates" />
     </key>
@@ -79,6 +82,15 @@
       <workItem from="1597737786708" duration="14705000" />
       <workItem from="1597777837385" duration="4266000" />
       <workItem from="1598180872735" duration="4492000" />
+      <workItem from="1598339717843" duration="8796000" />
+      <workItem from="1598876777462" duration="7096000" />
+      <workItem from="1598997025193" duration="1697000" />
+      <workItem from="1599119946518" duration="3809000" />
+      <workItem from="1599302979713" duration="5006000" />
+      <workItem from="1599399322455" duration="19419000" />
+      <workItem from="1599426475084" duration="4483000" />
+      <workItem from="1599550499763" duration="177000" />
+      <workItem from="1599561313473" duration="1261000" />
     </task>
     <servers />
   </component>
@@ -86,30 +98,58 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="463" y="118" key="FileChooserDialogImpl" timestamp="1597773270069">
+    <state width="391" height="438" key="DebuggerActiveHint" timestamp="1599414451235">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="463" y="118" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1597773270069" />
-    <state width="1323" height="179" key="GridCell.Tab.0.bottom" timestamp="1598184617339">
+    <state width="391" height="438" key="DebuggerActiveHint/0.0.1366.728@0.0.1366.728" timestamp="1599414451235" />
+    <state x="463" y="118" key="FileChooserDialogImpl" timestamp="1599550612808">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="179" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1598184617339" />
-    <state width="1323" height="179" key="GridCell.Tab.0.center" timestamp="1598184617338">
+    <state x="463" y="118" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1599550612808" />
+    <state width="1323" height="186" key="GridCell.Tab.0.bottom" timestamp="1599564726815">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="179" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1598184617338" />
-    <state width="1323" height="179" key="GridCell.Tab.0.left" timestamp="1598184617338">
+    <state width="1323" height="186" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1599564726815" />
+    <state width="1323" height="186" key="GridCell.Tab.0.center" timestamp="1599564726815">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="179" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1598184617338" />
-    <state width="1323" height="179" key="GridCell.Tab.0.right" timestamp="1598184617338">
+    <state width="1323" height="186" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1599564726815" />
+    <state width="1323" height="186" key="GridCell.Tab.0.left" timestamp="1599564726815">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="179" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1598184617338" />
-    <state x="184" y="6" key="SettingsEditor" timestamp="1597737979747">
+    <state width="1323" height="186" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1599564726815" />
+    <state width="1323" height="186" key="GridCell.Tab.0.right" timestamp="1599564726815">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="184" y="6" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1597737979747" />
+    <state width="1323" height="186" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1599564726815" />
+    <state width="1323" height="183" key="GridCell.Tab.1.bottom" timestamp="1599421529863">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="183" key="GridCell.Tab.1.bottom/0.0.1366.728@0.0.1366.728" timestamp="1599421529863" />
+    <state width="1323" height="183" key="GridCell.Tab.1.center" timestamp="1599421529863">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="183" key="GridCell.Tab.1.center/0.0.1366.728@0.0.1366.728" timestamp="1599421529863" />
+    <state width="1323" height="183" key="GridCell.Tab.1.left" timestamp="1599421529863">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="183" key="GridCell.Tab.1.left/0.0.1366.728@0.0.1366.728" timestamp="1599421529863" />
+    <state width="1323" height="183" key="GridCell.Tab.1.right" timestamp="1599421529863">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="183" key="GridCell.Tab.1.right/0.0.1366.728@0.0.1366.728" timestamp="1599421529863" />
+    <state x="184" y="6" key="SettingsEditor" timestamp="1599124778000">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="184" y="6" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1599124778000" />
+    <state x="332" y="0" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1599429137555">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="332" y="0" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1366.728@0.0.1366.728" timestamp="1599429137555" />
+    <state x="245" y="99" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1599409084851">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="245" y="99" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.1366.728@0.0.1366.728" timestamp="1599409084851" />
     <state x="0" y="0" width="736" height="728" key="find.popup" timestamp="1597739016603">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -125,5 +165,12 @@
         </breakpoint>
       </default-breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="Python.DjangoServer">
+        <watch expression="to_date == &quot;&quot;" language="Python" />
+        <watch expression="to_date.length" language="Python" />
+        <watch expression="to_date[0] == &quot;&quot;" language="Python" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

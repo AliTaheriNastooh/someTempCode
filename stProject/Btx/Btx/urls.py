@@ -16,9 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include, url
+from rest_framework import routers
+
 from search_index import urls as search_index_urls
+from aggs import urls as aggs_urls
+from aggs import views as aggsviews
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    url(r'^aggs/', include(aggs_urls)),
     url(r'^search/', include(search_index_urls)),
+
 ]

@@ -6,7 +6,7 @@ from posts.models import post
 from posts.models.post import Post
 
 #INDEX = Index(settings.ELASTICSEARCH_INDEX_NAMES[__name__])
-INDEX = Index('djangopost')
+INDEX = Index('djangopost2')
 
 # See Elasticsearch Indices API reference for available settings
 INDEX.settings(
@@ -29,12 +29,12 @@ class PostDocument(Document):
     messageDate = fields.DateField()
     elasticPushDate = fields.DateField()
     senderId = fields.IntegerField()
-    senderUsername = fields.KeywordField()
-    senderName = fields.KeywordField()
+    senderUsername = fields.TextField()
+    senderName = fields.TextField()
     isGroup = fields.BooleanField()
     channelId = fields.IntegerField()
-    channelName = fields.KeywordField()
-    channelUsername = fields.KeywordField()
+    channelName = fields.TextField()
+    channelUsername = fields.TextField()
     parentId = fields.IntegerField()
     likeCount = fields.IntegerField()
     source = fields.KeywordField()
@@ -43,7 +43,9 @@ class PostDocument(Document):
         fields={
             'raw': fields.KeywordField(),
             'suggest': fields.CompletionField(),
-        }
+        },
+
+
     )
     image = fields.TextField()
     version = fields.KeywordField()

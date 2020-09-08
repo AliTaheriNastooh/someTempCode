@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'django_elasticsearch_dsl_drf',
 
     'posts',
-    'search_index'
+    'search_index',
+    'aggs'
 
 ]
 
@@ -135,7 +136,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 5,
+    'PAGE_SIZE': 20,
     'ORDERING_PARAM': 'ordering',
 }
 
@@ -147,5 +148,5 @@ ELASTICSEARCH_DSL = {
 }
 
 ELASTICSEARCH_INDEX_NAMES = {
-    'search_indexes.documents.post': 'djangopost',
+    'search_indexes.documents.post': 'djangopost2',
 }
